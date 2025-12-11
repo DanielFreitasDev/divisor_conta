@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Divisor de Conta</title>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Divida a conta do bar ou restaurante facilmente.">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+</head>
+<body>
+
+<header class="app-header">
+    <div class="header-content">
+        <h1>Divisor de Conta</h1>
+        <button id="themeToggle" class="icon-btn" aria-label="Alternar Tema">
+            🌗
+        </button>
+    </div>
+</header>
+
+<main class="container">
+    <section class="card config-card">
+        <div class="input-group">
+            <label for="billName">Nome do evento</label>
+            <input type="text" id="billName" placeholder="Ex: Churrasco da Firma">
+        </div>
+        <div class="input-group">
+            <label for="serviceRate">Taxa de Serviço (%)</label>
+            <div class="stepper-wrapper">
+                <button type="button" data-action="dec-rate">−</button>
+                <input type="number" id="serviceRate" value="10" readonly>
+                <button type="button" data-action="inc-rate">+</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h2>Pessoas</h2>
+            <span class="badge" id="peopleCount">0</span>
+        </div>
+        <div id="peopleList" class="list-container">
+        </div>
+        <button id="addPersonBtn" class="btn btn-outline full-width">
+            + Adicionar Pessoa
+        </button>
+    </section>
+
+    <section class="card">
+        <div class="card-header">
+            <h2>Itens Consumidos</h2>
+            <span class="badge" id="itemsCount">0</span>
+        </div>
+        <div id="itemsList" class="list-container">
+        </div>
+        <div class="spacer-bottom"></div>
+    </section>
+</main>
+
+<nav class="bottom-bar">
+    <button id="addItemBtn" class="btn btn-primary">
+        <span>+</span> Item
+    </button>
+    <button id="viewResultsBtn" class="btn btn-success">
+        💲 Calcular
+    </button>
+    <button id="optionsBtn" class="btn btn-icon" aria-label="Opções">
+        ⚙️
+    </button>
+</nav>
+
+<dialog id="resultsDialog">
+    <div class="dialog-content">
+        <header>
+            <h2>Resultado</h2>
+            <button id="closeDialogBtn" class="close-btn">&times;</button>
+        </header>
+        <div id="resultsBody"></div>
+        <footer>
+            <button id="shareBtn" class="btn btn-primary full-width">
+                📲 Compartilhar no WhatsApp
+            </button>
+        </footer>
+    </div>
+</dialog>
+
+<dialog id="optionsDialog">
+    <div class="dialog-content small-dialog">
+        <h3>Opções</h3>
+        <button id="clearDataBtn" class="btn btn-danger full-width">Limpar Tudo</button>
+        <button id="loadExampleBtn" class="btn btn-outline full-width">Carregar Exemplo</button>
+        <button id="closeOptionsBtn" class="btn btn-secondary full-width">Fechar</button>
+    </div>
+</dialog>
+
+<script src="app.js" defer></script>
+</body>
+</html>
