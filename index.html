@@ -2,11 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Divisor de Conta</title>
     <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="Divida a conta do bar ou restaurante facilmente.">
-
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="icons/icon-192.png">
@@ -43,8 +41,7 @@
             <h2>Pessoas</h2>
             <span class="badge" id="peopleCount">0</span>
         </div>
-        <div id="peopleList" class="list-container">
-        </div>
+        <div id="peopleList" class="list-container"></div>
         <button id="addPersonBtn" class="btn btn-outline full-width">
             + Adicionar Pessoa
         </button>
@@ -55,8 +52,7 @@
             <h2>Itens Consumidos</h2>
             <span class="badge" id="itemsCount">0</span>
         </div>
-        <div id="itemsList" class="list-container">
-        </div>
+        <div id="itemsList" class="list-container"></div>
         <div class="spacer-bottom"></div>
     </section>
 </main>
@@ -92,8 +88,7 @@
     <div class="dialog-content small-dialog">
         <h3>Opções</h3>
         <button id="clearDataBtn" class="btn btn-danger full-width">Limpar Tudo</button>
-        <button id="loadExampleBtn" class="btn btn-outline full-width">Carregar Exemplo</button>
-        <button id="closeOptionsBtn" class="btn btn-secondary full-width">Fechar</button>
+        <button id="closeOptionsBtn" class="btn btn-secondary full-width" style="margin-top:0.5rem">Fechar</button>
     </div>
 </dialog>
 

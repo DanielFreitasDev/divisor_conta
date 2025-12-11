@@ -19,7 +19,6 @@ const State = {
         }
     },
 
-    // ALTERAÇÃO AQUI: Adicionado parâmetro 'shouldRender'
     save(shouldRender = true) {
         localStorage.setItem('divisor_conta_data', JSON.stringify(this.data));
         if (shouldRender) UI.render();
@@ -33,7 +32,7 @@ const State = {
     addPerson(name = '') {
         const id = Date.now().toString(36) + Math.random().toString(36).substr(2);
         this.data.people.push({id, name});
-        this.save(true); // Redesenha para mostrar o novo campo
+        this.save(true);
         return id;
     },
 
@@ -47,7 +46,7 @@ const State = {
 
     addItem() {
         const id = Date.now().toString(36) + Math.random().toString(36).substr(2);
-        this.data.items.push({id, name: '', price: 0, participants: []});
+        this.data.items.push({id, name: '', price: 0, quantity: 1, participants: []});
         this.save(true);
         return id;
     },
@@ -66,7 +65,6 @@ const State = {
         } else {
             item.participants.push(personId);
         }
-        // Aqui mantemos o render true para atualizar a cor do chip visualmente
         this.save(true);
     },
 
@@ -74,7 +72,6 @@ const State = {
         const item = this.data.items.find(i => i.id === itemId);
         if (item) {
             item[field] = value;
-            // Se for atualização direta via código, salva sem renderizar para garantir performance
             this.save(false);
         }
     }
@@ -105,10 +102,8 @@ const UI = {
     },
 
     init() {
-        // Bind de Eventos Globais
         document.getElementById('addPersonBtn').addEventListener('click', () => {
             State.addPerson();
-            // Pequeno delay para garantir que o DOM atualizou antes de focar
             setTimeout(() => {
                 const inputs = document.querySelectorAll('.person-name-input');
                 if (inputs.length) inputs[inputs.length - 1].focus();
@@ -139,17 +134,12 @@ const UI = {
             }
         });
 
-        document.getElementById('loadExampleBtn').addEventListener('click', () => {
-            UI.loadExample();
-            UI.els.optionsDialog.close();
-        });
-
+        // Toggle Theme
         document.getElementById('themeToggle').addEventListener('click', () => {
             document.body.classList.toggle('light-theme');
             localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
         });
 
-        // CORREÇÃO: Salvar nome da conta sem perder foco (false)
         UI.els.billName.addEventListener('input', (e) => {
             State.data.billName = e.target.value;
             State.save(false);
@@ -190,15 +180,13 @@ const UI = {
             div.style.gap = '0.5rem';
 
             div.innerHTML = `
-                <input type="text" class="person-name-input" value="${person.name}" placeholder="Nome da pessoa">
-                <button class="icon-btn remove-person-btn" style="color:var(--danger)">×</button>
+                <input type="text" class="person-name-input" value="${person.name}" placeholder="Nome da pessoa" style="height: 44px;">
+                <button class="icon-btn remove-person-btn" style="color:var(--danger); height: 44px; width: 44px; display:flex; align-items:center; justify-content:center;">×</button>
             `;
 
-            // CORREÇÃO AQUI: save(false) para não perder o foco
             div.querySelector('input').addEventListener('input', (e) => {
                 person.name = e.target.value;
                 State.save(false);
-                // Atualiza manualmente os nomes nos chips (já que não vamos redesenhar a tela toda)
                 document.querySelectorAll(`.chip[data-pid="${person.id}"]`).forEach(c => c.textContent = person.name || 'Pessoa');
             });
 
@@ -221,15 +209,38 @@ const UI = {
 
             if (State.data.people.length === 0) participantsHTML = '<small style="color:var(--text-muted)">Adicione pessoas primeiro</small>';
 
+            const qty = item.quantity || 1;
+
+            // ESTILOS INLINE PARA GARANTIR ALINHAMENTO PERFEITO
+            // Todos os inputs e o botão têm height: 48px explicitamente definido.
             div.innerHTML = `
-                <div class="item-main">
-                    <div style="flex:2">
-                        <input type="text" class="item-name-input" value="${item.name}" placeholder="Item (ex: Cerveja)">
+                <div class="item-main" style="align-items: flex-end; display: flex; gap: 0.5rem;">
+                    
+                    <div style="flex: 10; min-width: 0;">
+                        <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px">Item</label>
+                        <input type="text" class="item-name-input" value="${item.name}" placeholder="Ex: Cerveja" 
+                               style="width:100%; height: 48px; padding: 0 12px; box-sizing: border-box;">
                     </div>
-                    <div style="flex:1">
-                        <input type="text" inputmode="numeric" class="item-price-input" value="${Format.currencyRaw(item.price)}" placeholder="0,00">
+                    
+                    <div style="flex: 2; min-width: 50px;">
+                        <label style="font-size:0.75rem; color:var(--text-muted); text-align:center; display:block; margin-bottom:4px">Qtd</label>
+                        <input type="number" class="item-qty-input" value="${qty}" min="1" 
+                               style="width:100%; height: 48px; text-align:center; padding: 0; box-sizing: border-box;">
                     </div>
-                    <button class="icon-btn remove-item-btn" style="color:var(--danger)">🗑️</button>
+
+                    <div style="flex: 6; min-width: 80px;">
+                        <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px">Valor un.</label>
+                        <input type="text" inputmode="numeric" class="item-price-input" value="${Format.currencyRaw(item.price)}" placeholder="0,00"
+                               style="width:100%; height: 48px; padding: 0 12px; box-sizing: border-box;">
+                    </div>
+
+                    <div style="flex: 0 0 auto;">
+                        <label style="font-size:0.75rem; display:block; margin-bottom:4px; opacity:0; pointer-events:none;">X</label>
+                        <button class="icon-btn remove-item-btn" 
+                                style="color:var(--danger); height: 48px; width: 44px; border: 1px solid var(--border); border-radius: 8px; display:flex; align-items:center; justify-content:center; box-sizing: border-box;">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
                 <div class="item-participants">
                     ${participantsHTML}
@@ -237,15 +248,21 @@ const UI = {
             `;
 
             const nameInput = div.querySelector('.item-name-input');
+            const qtyInput = div.querySelector('.item-qty-input');
             const priceInput = div.querySelector('.item-price-input');
 
-            // CORREÇÃO AQUI: save(false) para não perder foco
             nameInput.addEventListener('input', (e) => {
                 item.name = e.target.value;
                 State.save(false);
             });
 
-            // CORREÇÃO AQUI: save(false) para não perder foco durante a digitação do preço
+            qtyInput.addEventListener('input', (e) => {
+                let val = parseInt(e.target.value);
+                if (val < 1 || isNaN(val)) val = 1;
+                item.quantity = val;
+                State.save(false);
+            });
+
             priceInput.addEventListener('input', (e) => {
                 const val = Format.parseMoney(e.target.value);
                 item.price = val;
@@ -304,31 +321,6 @@ const UI = {
 
         UI.els.resultsBody.innerHTML = html;
         UI.els.resultsDialog.showModal();
-    },
-
-    loadExample() {
-        State.reset();
-        const p1 = State.addPerson('Daniel');
-        const p2 = State.addPerson('Lucas');
-        const p3 = State.addPerson('Manoel');
-
-        // Para o exemplo, usamos save(true) implícito ao adicionar itens
-        const i1 = State.addItem();
-        State.updateItemValue(i1, 'name', 'Picanha');
-        State.updateItemValue(i1, 'price', 150.00);
-        State.toggleParticipant(i1, p1);
-        State.toggleParticipant(i1, p2);
-        State.toggleParticipant(i1, p3);
-
-        const i2 = State.addItem();
-        State.updateItemValue(i2, 'name', 'Cervejas');
-        State.updateItemValue(i2, 'price', 80.00);
-        State.toggleParticipant(i2, p1);
-        State.toggleParticipant(i2, p2);
-
-        State.data.billName = "Exemplo Rápido";
-        State.data.serviceRate = 10;
-        State.save(true); // Força render final
     }
 };
 
@@ -347,8 +339,11 @@ const Calculator = {
 
         State.data.items.forEach(item => {
             if (item.price > 0 && item.participants.length > 0) {
-                subtotal += item.price;
-                const splitValue = item.price / item.participants.length;
+                const qty = item.quantity || 1;
+                const lineTotal = item.price * qty;
+                subtotal += lineTotal;
+
+                const splitValue = lineTotal / item.participants.length;
                 item.participants.forEach(pid => {
                     if (peopleMap[pid]) peopleMap[pid].share += splitValue;
                 });
