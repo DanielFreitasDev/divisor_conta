@@ -1,4 +1,4 @@
-const CACHE_NAME = 'divisor-conta-v3-refactored';
+const CACHE_NAME = 'divisor-conta-v4-refactored';
 const ASSETS = [
     './',
     './index.html',
